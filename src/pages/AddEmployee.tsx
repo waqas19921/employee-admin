@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from "react-router-dom";
-import { CircularProgress, Stack, Typography } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import useAxios from 'axios-hooks';
 import EmployeeForm, { IEmployeeFields } from '../components/EmployeeForm';
 import Loader from '../components/Loader';
@@ -18,7 +19,6 @@ export const AddEmployee = () => {
   )
   const navigate = useNavigate();
   const onSubmit = (data: IEmployeeFields) => {
-    console.log(data);
     createEmployee({ data });
   }
 

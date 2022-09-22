@@ -10,12 +10,13 @@ import EmployeeListRow from './EmployeeListRow';
 
 interface IEmployeeDataTableProps {
   employees?: IEmployee[];
+  onDelete: (id: number) => void
 }
 
-function EmployeeDataTable({employees}: IEmployeeDataTableProps) {
+function EmployeeDataTable({employees, onDelete}: IEmployeeDataTableProps) {
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <Table sx={{ minWidth: 650 }} aria-label="simple table" >
         <TableHead>
           <TableRow>
             <TableCell />
@@ -24,11 +25,12 @@ function EmployeeDataTable({employees}: IEmployeeDataTableProps) {
             <TableCell align="left">Last Name</TableCell>
             <TableCell align="left">Email</TableCell>
             <TableCell align="left">Phone Number</TableCell>
+            <TableCell align="left">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {(employees || []).map((employee) => (
-            <EmployeeListRow key={employee.id} employee={employee} />
+            <EmployeeListRow key={employee.id} employee={employee} onDelete={onDelete} />
           ))}
         </TableBody>
       </Table>

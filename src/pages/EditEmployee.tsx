@@ -1,18 +1,16 @@
-import React from 'react';
-import { redirect, useParams } from "react-router-dom";
-import { Stack } from '@mui/material';
+import React, { useEffect } from 'react';
+import { useNavigate, useParams } from "react-router-dom";
+import Stack from '@mui/material/Stack';
 import useAxios from 'axios-hooks';
 import EmployeeForm, { IEmployeeFields } from '../components/EmployeeForm';
+import Loader from '../components/Loader';
+import Alert from '@mui/material/Alert';
 
-const defaultValues = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  phoneNumber: ""
-};
 
 export const EditEmployee = () => {
   let { employeeId } = useParams();
+  const navigate = useNavigate();
+
   const [{ data: employeeData, loading: employeeLoading, error: fetchEmployeeErr }] = useAxios(
     `/employee/${employeeId}`
   )
@@ -21,26 +19,35 @@ export const EditEmployee = () => {
     updateEmployee
   ] = useAxios(
     {
-      url: '/employee',
+      url: `/employee/${employeeId}`,
       method: 'PUT'
     },
     { manual: true }
   )
-  const onSubmit = (data: IEmployeeFields) => updateEmployee({ data });
+  const onSubmit = (data: IEmployeeFields) => {
+    const addresses = data.addresses.map(address => ({...address, apartmentNumber: parseInt(address.apartmentNumber.toString())}));
+    const dataToSend = {...data, addresses: addresses};
+    updateEmployee({ data: dataToSend })
+  };
 
-  if (data && !loading) {
-    redirect('/');
-    return null;
+  useEffect(() => {
+    if (data && !loading) {
+      navigate('/');
+    }
+  },  [data, loading])
+  if (error || fetchEmployeeErr) {
+    return (
+      <Alert severity="error">
+        {`Got Error: ${error || fetchEmployeeErr}`}
+      </Alert>
+    );
   }
-  if (error) {
-    return <div>{`Got Error: ${error}`}</div>;
-  }
-  if (loading) {
-    return <div>Loading...</div>;
+  if (employeeLoading) {
+    return  <Loader loading={employeeLoading}/>;
   }
   return (
     <Stack direction={'column'} style={{ padding: 20 }} spacing={3}>
-      <EmployeeForm onSubmit={onSubmit}/>
+      <EmployeeForm employeeData={employeeData} onSubmit={onSubmit} isEditForm={true}/>
     </Stack>
   );
 };
